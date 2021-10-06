@@ -1,0 +1,49 @@
+name: CI
+'on':
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  Test:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+        python-version:
+          - '3.6'
+          - '3.7'
+          - '3.8'
+          - '3.9'
+          - '3.10'
+    steps:
+      - name: 'Set up Python ${{ matrix.python-version }}'
+        uses: actions/setup-python@v2
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - uses: actions/checkout@v2
+      - run: pip install -U pip setuptools wheel
+      - run: pip install pytest pytest-cov
+      - run: py.test -vvv --cov .
+      # - uses: codecov/codecov-action@v2
+  Lint:
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+        python-version:
+          - '3.9'
+    steps:
+      - name: 'Set up Python ${{ matrix.python-version }}'
+        uses: actions/setup-python@v2
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - uses: actions/checkout@v2
+      - run: pip install -U pip setuptools wheel
+      - run: pip install flake8 mypy pytest
+      - run: flake8 .
+      - run: mypy --strict --install-types --non-interactive .

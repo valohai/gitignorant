@@ -1,0 +1,17 @@
+*.egg
+*.egg-info/
+*.log
+*.manifest
+*.mo
+*.pot
+*.py[cod]
+.*cache
+.coverage
+.idea/
+.tox
+__pycache__/
+build/
+dist/
+htmlcov/
+sdist/
+venv*
