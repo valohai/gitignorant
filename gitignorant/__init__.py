@@ -13,17 +13,11 @@ specials_re = re.compile(r"(\*+|\[|]|\?)")
 
 
 @lru_cache(maxsize=512)
-def compile_pattern(pat: str, is_dir: bool) -> "re.Pattern":  # type: ignore[type-arg]
-    anchor = False
-    if pat.startswith("/"):
-        anchor = True
-        pat = pat[1:]
-    elif is_dir and "/" in pat:
-        anchor = True
-
-    re_bits = []
-    if anchor:
-        re_bits.append("^")
+def compile_pattern(pat: str) -> "re.Pattern":  # type: ignore[type-arg]
+    # Start the pattern with "either the start of the string or a directory separator".
+    # Whether or not we were anchored to the start of the path is checked within
+    # `matches`.
+    re_bits = ["(?:^|/)"]
 
     bits = specials_re.split(pat)
     while bits:
@@ -88,11 +82,20 @@ class Rule:
                 #     files and directories.
                 return False
             pat = pat.rstrip("/")
-        re_pat = compile_pattern(pat, is_dir=is_dir)
-        # `search` is correct since the regex is possibly anchored from the start
+        if pat.startswith("/"):
+            anchor = True
+            pat = pat[1:]
+        elif is_dir and "/" in pat:
+            anchor = True
+        else:
+            anchor = False
+        re_pat = compile_pattern(pat)
         res = re_pat.search(path)
         # This commented-out print() is useful for debugging.
         # print(self.content, "->", re_pat, "?", path, is_dir, ":", res)
+        if anchor:
+            # If the match was supposed to be anchored, verify that.
+            return bool(res and res.start() == 0)
         return bool(res)
 
 
