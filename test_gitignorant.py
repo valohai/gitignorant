@@ -9,6 +9,7 @@ GITIGNORE_STRING = r"""
 
 *.peasoup
 a?.john
+zz*
 !/[a-f]*.peasoup
 # world
 !booze/*.peasoup
@@ -49,6 +50,8 @@ def rules() -> List[Rule]:
         (True, "!important_1*"),
         (True, "spaced_out "),
         (False, "spaced_out"),
+        (True, "zztop"),
+        (False, "jazztop"),
     ],
 )
 def test_gitignorant_files(rules: List[Rule], path: str, expected: bool) -> None:
