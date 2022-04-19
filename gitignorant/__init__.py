@@ -6,6 +6,7 @@ __all__ = [
     "Rule",
     "check_match",
     "parse_gitignore_file",
+    "try_parse_rule",
 ]
 
 # TODO: this may not correctly support \] within ]
