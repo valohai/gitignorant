@@ -71,7 +71,7 @@ class Rule:
         self.content = str(content)
 
     def __repr__(self) -> str:
-        return f'<Rule {self.content!r}{ "(negative)" if self.negative else ""}>'
+        return f'<Rule {self.content!r}{" (negative)" if self.negative else ""}>'
 
     def matches(self, path: str, is_dir: bool = False) -> bool:
         pat = self.content
