@@ -2,7 +2,13 @@ from typing import List
 
 import pytest
 
-from gitignorant import parse_gitignore_file, check_match, Rule, try_parse_rule
+from gitignorant import (
+    Rule,
+    check_match,
+    check_path_match,
+    parse_gitignore_file,
+    try_parse_rule,
+)
 
 GITIGNORE_STRING = r"""
 # Hello! this line is ignored.
@@ -63,8 +69,19 @@ TEST_CASES = [
 
 
 @pytest.mark.parametrize(["expected", "path"], TEST_CASES)
-def test_gitignorant_files(rules: List[Rule], path: str, expected: bool) -> None:
-    assert check_match(rules, path, is_dir=False) == expected
+@pytest.mark.parametrize("func", ["check_match", "check_path_match"])
+def test_gitignorant_files(
+    rules: List[Rule],
+    path: str,
+    expected: bool,
+    func: str,
+) -> None:
+    if func == "check_match":
+        assert check_match(rules, path, is_dir=False) == expected
+    elif func == "check_path_match":
+        assert check_path_match(rules, path) == expected
+    else:
+        raise NotImplementedError("...")
 
 
 @pytest.mark.parametrize(
@@ -154,3 +171,20 @@ def test_unfinished_group_parsing() -> None:
     assert r1.matches("unfinished/symph", is_dir=False)
     assert r1.matches("unfinished/sympy", is_dir=False)
     assert not r1.matches("unfinished/sympathy", is_dir=False)
+
+
+CHECK_PATH_MATCH_CASES = [
+    # These should match since `recipes/` is in the list,
+    # and it's not anchored to the root
+    ("recipes/zep", True),
+    ("splop/recipes/zep", True),
+    # This should not match, since `/other/recipes/` is explicitly negated
+    ("other/recipes/zep", False),
+    # This too should match, since it's trying to ignore the whole folder
+    ("recipes/", True),
+]
+
+
+@pytest.mark.parametrize(["path", "expected"], CHECK_PATH_MATCH_CASES)
+def test_check_path_match(rules: List[Rule], path: str, expected: bool) -> None:
+    assert check_path_match(rules, path) == expected
