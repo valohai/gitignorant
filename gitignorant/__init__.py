@@ -1,11 +1,14 @@
+import os
 import re
 from functools import lru_cache
-from typing import Iterable, TextIO, Optional, Union, List
+from typing import Callable, Iterable, List, Optional, TextIO, Tuple, Union
 
 __all__ = [
     "Rule",
     "check_match",
+    "check_path_match",
     "parse_gitignore_file",
+    "try_parse_rule",
 ]
 
 # TODO: this may not correctly support \] within ]
@@ -71,7 +74,7 @@ class Rule:
         self.content = str(content)
 
     def __repr__(self) -> str:
-        return f'<Rule {self.content!r}{ "(negative)" if self.negative else ""}>'
+        return f'<Rule {self.content!r}{" (negative)" if self.negative else ""}>'
 
     def matches(self, path: str, is_dir: bool = False) -> bool:
         pat = self.content
@@ -132,13 +135,57 @@ def try_parse_rule(line: str) -> Optional["Rule"]:
     return Rule(negative=negative, content=line)
 
 
-def check_match(rules: List[Rule], path: str, is_dir: bool = False) -> bool:
+def _find_match(rules: List[Rule], path: str, is_dir: bool = False) -> Optional[bool]:
+    """
+    Internal helper function for check_match() and check_path_match().
+
+    Returns True or False if the path matches any of the rules
+    (where True is returned for positive rules and False for negative rules).
+
+    Returns None if the path matches no rules.
+    """
+
     # Algorithm: Find the last matching rule in the list and
     #            figure out whether it was not negative.
     for rule in reversed(rules):
         if rule.matches(path, is_dir):
             return not rule.negative
-    return False
+    return None
+
+
+def check_match(rules: List[Rule], path: str, is_dir: bool = False) -> bool:
+    """
+    Check whether the given string (likely a path) matches any of the given rules,
+    but without any splitting of the path into components.
+
+    See check_path_match() for a version that splits the path into components.
+    """
+    return bool(_find_match(rules, path, is_dir))
+
+
+def check_path_match(
+    rules: List[Rule],
+    path: str,
+    split_path: Callable[[str], Tuple[str, str]] = os.path.split,
+) -> bool:
+    """
+    Check whether the given path matches any of the rules.
+
+    In other words,
+
+    * Split `path` into directory and file parts using the `split_path` function.
+    * Check whether the directory part matches any directory rule,
+      and if it does, consider that the result.
+    * Check whether the full path matches any file rule.
+    """
+
+    dirname, basename = split_path(path)
+
+    if dirname:
+        dir_match = _find_match(rules, dirname, is_dir=True)
+        if dir_match is not None:
+            return dir_match
+    return check_match(rules, path, is_dir=False)
 
 
 def parse_gitignore_file(f: Union[TextIO, Iterable[str]]) -> Iterable[Rule]:
