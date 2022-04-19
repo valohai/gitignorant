@@ -7,6 +7,10 @@ from gitignorant import parse_gitignore_file, check_match, Rule, try_parse_rule
 GITIGNORE_STRING = r"""
 # Hello! this line is ignored.
 
+# comment
+#comment
+comment_after.file # a comment must be on its own line
+
 *.peasoup
 a?.john
 zz*
@@ -52,6 +56,11 @@ def rules() -> List[Rule]:
         (False, "spaced_out"),
         (True, "zztop"),
         (False, "jazztop"),
+        (False, "# comment"),
+        (False, "#comment"),
+        (False, "comment"),
+        (False, "comment_after.file"),
+        (True, "comment_after.file # a comment must be on its own line"),
     ],
 )
 def test_gitignorant_files(rules: List[Rule], path: str, expected: bool) -> None:
