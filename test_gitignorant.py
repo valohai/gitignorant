@@ -34,35 +34,35 @@ def rules() -> List[Rule]:
     return list(parse_gitignore_file(GITIGNORE_STRING.strip().splitlines()))
 
 
-@pytest.mark.parametrize(
-    "expected,path",
-    [
-        (False, "hello"),
-        (True, "hello.peasoup"),
-        (False, "hello.peasoupiness"),
-        (True, "ballo/allo.peasoup"),
-        (False, "allo.peasoup"),
-        (False, "cullo.peasoup"),
-        (True, "bazze/allo.peasoup"),
-        (False, "booze/allo.peasoup"),
-        (True, "booze/scaffolding/allo.peasoup"),
-        (False, "scaffolding/allo.peasoup"),
-        (True, "asdf/ab.john"),
-        (False, "asdf/aba.john"),
-        (True, "ab.john"),
-        (False, "asdf/cb.john"),
-        (True, "!important_1*"),
-        (True, "spaced_out "),
-        (False, "spaced_out"),
-        (True, "zztop"),
-        (False, "jazztop"),
-        (False, "# comment"),
-        (False, "#comment"),
-        (False, "comment"),
-        (False, "comment_after.file"),
-        (True, "comment_after.file # a comment must be on its own line"),
-    ],
-)
+TEST_CASES = [
+    (False, "hello"),
+    (True, "hello.peasoup"),
+    (False, "hello.peasoupiness"),
+    (True, "ballo/allo.peasoup"),
+    (False, "allo.peasoup"),
+    (False, "cullo.peasoup"),
+    (True, "bazze/allo.peasoup"),
+    (False, "booze/allo.peasoup"),
+    (True, "booze/scaffolding/allo.peasoup"),
+    (False, "scaffolding/allo.peasoup"),
+    (True, "asdf/ab.john"),
+    (False, "asdf/aba.john"),
+    (True, "ab.john"),
+    (False, "asdf/cb.john"),
+    (True, "!important_1*"),
+    (True, "spaced_out "),
+    (False, "spaced_out"),
+    (True, "zztop"),
+    (False, "jazztop"),
+    (False, "# comment"),
+    (False, "#comment"),
+    (False, "comment"),
+    (False, "comment_after.file"),
+    (True, "comment_after.file # a comment must be on its own line"),
+]
+
+
+@pytest.mark.parametrize(["expected", "path"], TEST_CASES)
 def test_gitignorant_files(rules: List[Rule], path: str, expected: bool) -> None:
     assert check_match(rules, path, is_dir=False) == expected
 
