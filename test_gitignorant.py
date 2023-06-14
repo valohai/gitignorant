@@ -10,7 +10,8 @@ from gitignorant import (
     try_parse_rule,
 )
 
-GITIGNORE_STRING = r"""
+GITIGNORE_STRING = (
+    r"""
 # Hello! this line is ignored.
 
 # comment
@@ -31,8 +32,9 @@ recipes/
 
 # Escape testing
 \!important*
-spaced_out\ 
-"""  # noqa: W291
+"""
+    r"spaced_out\ "  # this is separate to avoid trimming whitespace
+)
 
 
 @pytest.fixture(scope="session")

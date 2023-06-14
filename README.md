@@ -3,7 +3,7 @@
 Gitignorant is (aspires to be)
 
 * a [spec]-compliant .gitignore file parser and matcher
-* for Python 3.6 and newer
+* for Python 3.7 and newer
 * with full type hinting and test coverage
 * and nothing you don't need
 
