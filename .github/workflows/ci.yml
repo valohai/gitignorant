@@ -12,38 +12,26 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-20.04
+          - ubuntu-22.04
         python-version:
-          - '3.6'
           - '3.7'
           - '3.8'
           - '3.9'
           - '3.10'
     steps:
+      - uses: actions/checkout@v3
       - name: 'Set up Python ${{ matrix.python-version }}'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '${{ matrix.python-version }}'
-      - uses: actions/checkout@v2
-      - run: pip install -U pip setuptools wheel
-      - run: pip install pytest pytest-cov
+      - run: pip install -U build pytest pytest-cov
       - run: py.test -vvv --cov .
-      # - uses: codecov/codecov-action@v2
+      - run: python -m build .
   Lint:
-    runs-on: '${{ matrix.os }}'
-    strategy:
-      matrix:
-        os:
-          - ubuntu-20.04
-        python-version:
-          - '3.9'
+    runs-on: ubuntu-latest
     steps:
-      - name: 'Set up Python ${{ matrix.python-version }}'
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
-          python-version: '${{ matrix.python-version }}'
-      - uses: actions/checkout@v2
-      - run: pip install -U pip setuptools wheel
-      - run: pip install flake8 mypy pytest
-      - run: flake8 .
-      - run: mypy --strict --install-types --non-interactive .
+          python-version: '3.11'
+      - uses: pre-commit/action@v3.0.0

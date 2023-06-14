@@ -3,6 +3,8 @@ import re
 from functools import lru_cache
 from typing import Callable, Iterable, List, Optional, TextIO, Tuple, Union
 
+__version__ = "0.2.0"
+
 __all__ = [
     "Rule",
     "check_match",

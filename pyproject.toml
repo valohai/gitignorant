@@ -1,6 +1,40 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gitignorant"
+dynamic = ["version"]
+description = "A parser for gitignore files"
+readme = "README.md"
+license = ""
+requires-python = ">=3.7"
+authors = [
+    { name = "Aarni Koskela", email = "aarni@valohai.com" },
 ]
-build-backend = "setuptools.build_meta"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/valohai/gitignorant/issues"
+Homepage = "https://github.com/valohai/gitignorant"
+
+[tool.hatch.version]
+path = "gitignorant/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/gitignorant",
+]
+
+[tool.ruff]
+ignore = []
+line-length = 88
+select = [
+    "E",
+    "F",
+    "W",
+]
