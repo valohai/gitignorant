@@ -29,6 +29,8 @@ zz*
 # Directory testing
 recipes/
 !/other/recipes/
+notes/private
+!recipes/include_anyway
 
 # Escape testing
 \!important*
@@ -180,6 +182,23 @@ CHECK_PATH_MATCH_CASES = [
     # and it's not anchored to the root
     ("recipes/zep", True),
     ("splop/recipes/zep", True),
+    # all subdirectories and files inside subdirectories too
+    ("recipes/xoop/", True),
+    ("recipes/xoop/zep", True),
+    ("recipes/xoop/zep/", True),
+    ("recipes/pkex/pox/ioa/hai/kxr/aha", True),
+    ("splop/recipes/xoop/xep", True),
+    # Subdirectory match (`notes/private`) also catches everything under it,
+    # including further subdirectories
+    ("notes/private", True),
+    ("notes/private/ramblings/trees", True),
+    ("notes/private/free_stuff", True),
+    # However, subdirectory match is only relative to the .gitignore location and
+    # not any subdirectories
+    ("splop/notes/private/notes_on_splop", False),
+    # Negative rule on a nested file inside a positive rule matching path denies match
+    ("recipes/include_anyway/delicious_plum_pie.txt", False),
+    ("recipes/include_anyway/more_pie_recipes/rhubarb_pie.txt", False),
     # This should not match, since `/other/recipes/` is explicitly negated
     ("other/recipes/zep", False),
     # This too should match, since it's trying to ignore the whole folder

@@ -178,15 +178,19 @@ def check_path_match(
     * Split `path` into directory and file parts using the `split_path` function.
     * Check whether the directory part matches any directory rule,
       and if it does, consider that the result.
+    * If the directory part has parent directories, split the directory again using
+     `split_path` and repeat previous step. This repeats until all parent directories
+      have been checked.
     * Check whether the full path matches any file rule.
     """
 
     dirname, basename = split_path(path)
 
-    if dirname:
+    while dirname:
         dir_match = _find_match(rules, dirname, is_dir=True)
         if dir_match is not None:
             return dir_match
+        dirname, basename = split_path(dirname)
     return check_match(rules, path, is_dir=False)
 
 
