@@ -29,6 +29,7 @@ zz*
 # Directory testing
 recipes/
 !/other/recipes/
+/other/recipes/work_in_progress.txt
 notes/private
 !recipes/include_anyway
 
@@ -193,14 +194,17 @@ CHECK_PATH_MATCH_CASES = [
     ("notes/private", True),
     ("notes/private/ramblings/trees", True),
     ("notes/private/free_stuff", True),
+    # It is not possible to explicitly include files from within an ignored directory
+    # (Git doesn't descend into ignored directories)
+    ("recipes/include_anyway/delicious_plum_pie.txt", True),
+    ("recipes/include_anyway/more_pie_recipes/rhubarb_pie.txt", True),
     # However, subdirectory match is only relative to the .gitignore location and
     # not any subdirectories
     ("splop/notes/private/notes_on_splop", False),
-    # Negative rule on a nested file inside a positive rule matching path denies match
-    ("recipes/include_anyway/delicious_plum_pie.txt", False),
-    ("recipes/include_anyway/more_pie_recipes/rhubarb_pie.txt", False),
     # This should not match, since `/other/recipes/` is explicitly negated
     ("other/recipes/zep", False),
+    # We can however re-ignore a file within an explicitly included directory
+    ("other/recipes/work_in_progress.txt", True),
     # This too should match, since it's trying to ignore the whole folder
     ("recipes/", True),
 ]

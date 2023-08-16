@@ -171,26 +171,32 @@ def check_path_match(
     split_path: Callable[[str], Tuple[str, str]] = os.path.split,
 ) -> bool:
     """
-    Check whether the given path matches any of the rules.
+    Check whether the given path or its parent directories match any of the rules.
 
     In other words,
 
-    * Split `path` into directory and file parts using the `split_path` function.
-    * Check whether the directory part matches any directory rule,
-      and if it does, consider that the result.
-    * If the directory part has parent directories, split the directory again using
-     `split_path` and repeat previous step. This repeats until all parent directories
-      have been checked.
-    * Check whether the full path matches any file rule.
+    * Split the path into directory and the filename (using `split_path`)
+    * Split the directory into directory parts (using `os.sep`)
+    * For each directory part from left to right, merge it with all previous directory
+      parts and check that against all rules with `is_dir=True`
+        * If a positive match is found, return `True` immediately
+        * If no match or a negative match, keep iterating for a possible positive match
+          deeper in the path
+    * If loop finishes, finally check exact path match with `is_dir=False`.
+      If no match, return `False`.
     """
 
-    dirname, basename = split_path(path)
+    dirname, _ = split_path(path)
+    dir_parts = dirname.split(os.sep)
+    path_to_match = ""
 
-    while dirname:
-        dir_match = _find_match(rules, dirname, is_dir=True)
-        if dir_match is not None:
-            return dir_match
-        dirname, basename = split_path(dirname)
+    for part in dir_parts:
+        path_to_match = os.path.join(path_to_match, part)
+        match = _find_match(rules, path_to_match, is_dir=True)
+        if match:
+            # This directory is ignored, so everything inside it is also ignored
+            return True
+
     return check_match(rules, path, is_dir=False)
 
 
