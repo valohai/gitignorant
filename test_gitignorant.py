@@ -29,6 +29,9 @@ zz*
 # Directory testing
 recipes/
 !/other/recipes/
+/other/recipes/work_in_progress.txt
+notes/private
+!recipes/include_anyway
 
 # Escape testing
 \!important*
@@ -180,8 +183,28 @@ CHECK_PATH_MATCH_CASES = [
     # and it's not anchored to the root
     ("recipes/zep", True),
     ("splop/recipes/zep", True),
+    # all subdirectories and files inside subdirectories too
+    ("recipes/xoop/", True),
+    ("recipes/xoop/zep", True),
+    ("recipes/xoop/zep/", True),
+    ("recipes/pkex/pox/ioa/hai/kxr/aha", True),
+    ("splop/recipes/xoop/xep", True),
+    # Subdirectory match (`notes/private`) also catches everything under it,
+    # including further subdirectories
+    ("notes/private", True),
+    ("notes/private/ramblings/trees", True),
+    ("notes/private/free_stuff", True),
+    # It is not possible to explicitly include files from within an ignored directory
+    # (Git doesn't descend into ignored directories)
+    ("recipes/include_anyway/delicious_plum_pie.txt", True),
+    ("recipes/include_anyway/more_pie_recipes/rhubarb_pie.txt", True),
+    # However, subdirectory match is only relative to the .gitignore location and
+    # not any subdirectories
+    ("splop/notes/private/notes_on_splop", False),
     # This should not match, since `/other/recipes/` is explicitly negated
     ("other/recipes/zep", False),
+    # We can however re-ignore a file within an explicitly included directory
+    ("other/recipes/work_in_progress.txt", True),
     # This too should match, since it's trying to ignore the whole folder
     ("recipes/", True),
 ]
