@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 from typing import Callable, Iterable, List, Optional, TextIO, Tuple, Union
 
-__version__ = "0.3.0"
+__version__ = "0.3.0rc0"
 
 __all__ = [
     "Rule",
