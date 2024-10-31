@@ -187,7 +187,7 @@ def check_path_match(
     """
 
     dirname, _ = split_path(path)
-    dir_parts = dirname.split(os.sep)
+    dir_parts = [part for part in dirname.split(os.sep) if part]
     path_to_match = ""
 
     for part in dir_parts:

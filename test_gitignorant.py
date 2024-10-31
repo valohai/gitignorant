@@ -213,3 +213,30 @@ CHECK_PATH_MATCH_CASES = [
 @pytest.mark.parametrize(["path", "expected"], CHECK_PATH_MATCH_CASES)
 def test_check_path_match(rules: List[Rule], path: str, expected: bool) -> None:
     assert check_path_match(rules, path) == expected
+
+
+IGNORE_ALL_BY_DEFAULT_RULES = list(
+    parse_gitignore_file(
+        [
+            "*",
+            "!include_this",
+            "!included_subdir/",
+            "!included_subdir/*",
+            "!*wildcard",
+        ]
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        ("ignore_this", True),
+        ("include_this", False),
+        ("included_subdir/include_file_in_subdir", False),
+        ("include_with_wildcard", False),
+    ],
+)
+def test_ignore_all_but_excluded(path: str, expected: bool) -> None:
+    """Test that we can ignore all files except those explicitly included"""
+    assert check_path_match(IGNORE_ALL_BY_DEFAULT_RULES, path) == expected
