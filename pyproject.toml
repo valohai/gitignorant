@@ -7,7 +7,7 @@ name = "gitignorant"
 dynamic = ["version"]
 description = "A parser for gitignore files"
 readme = "README.md"
-license = ""
+license = "MIT"
 requires-python = ">=3.7"
 authors = [
     { name = "Aarni Koskela", email = "aarni@valohai.com" },
