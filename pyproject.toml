@@ -33,8 +33,6 @@ include = [
 [tool.ruff]
 ignore = []
 line-length = 88
-select = [
-    "E",
-    "F",
-    "W",
-]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
