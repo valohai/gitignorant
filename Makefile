@@ -6,6 +6,7 @@ UV := $(shell command -v uv)
 # install the development dependencies
 dev: pyproject.toml
 	$(UV) pip install -e .[dev]
+	pre-commit install
 
 # run tests
 test:
