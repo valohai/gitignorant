@@ -18,6 +18,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]
+
 [project.urls]
 "Bug Tracker" = "https://github.com/valohai/gitignorant/issues"
 Homepage = "https://github.com/valohai/gitignorant"
